@@ -79,4 +79,3 @@ if __name__ == "__main__":
 	for maze_file in maze_files:
 		maze = Maze(path+maze_file)
 		build_search(maze_file, maze)
-		break

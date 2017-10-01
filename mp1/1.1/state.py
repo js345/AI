@@ -43,7 +43,7 @@ class State:
 		return not self.__eq__(other)
 
 	def __lt__(self, other):
-		return self.heuristic < other.heuristic
+		return self.cost < other.cost
 
 	def __hash__(self):
 		return hash((self.x, self.y, self.bits))

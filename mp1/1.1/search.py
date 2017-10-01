@@ -8,7 +8,7 @@ class Search:
 	Top level search routine for BFS, DFS, Greedy, A*
 	"""
 
-	dirs = [(0, -1), (-1, 0), (1, 0), (0, 1)]
+	dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
 	def __init__(self, start_state, goal_states, maze):
 		"""
@@ -103,11 +103,11 @@ class Search:
 
 	def greedy(self, frontier):
 		self.reset()
-		frontier.put(self.start_state)
+		frontier.put((0, self.start_state))
 		self.visited.add(self.start_state)
 		# start search, unreachable if return None
 		while not frontier.empty():
-			state = frontier.get()
+			h, state = frontier.get()
 			self.node_number += 1
 			if state in self.goal_states:
 				print("Expanded %r nodes" % self.node_number)
@@ -133,16 +133,16 @@ class Search:
 				expand.heuristic = self.manhattan(expand)
 				expand.parent = state
 				if expand not in self.visited:
-					frontier.put(expand)
+					frontier.put((expand.heuristic, expand))
 					self.visited.add(expand)
 
 	def astar(self, frontier):
 		self.reset()
-		frontier.put(self.start_state)
+		frontier.put((0, self.start_state))
 		self.visited.add(self.start_state)
 		# start search, unreachable if return None
 		while not frontier.empty():
-			state = frontier.get()
+			h, state = frontier.get()
 			self.node_number += 1
 			if state in self.goal_states:
 				print("Expanded %r nodes" % self.node_number)
@@ -168,5 +168,5 @@ class Search:
 				expand.heuristic = self.manhattan(expand) + expand.cost
 				expand.parent = state
 				if expand not in self.visited:
-					frontier.put(expand)
+					frontier.put((expand.heuristic, expand))
 					self.visited.add(expand)
