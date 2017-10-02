@@ -1,6 +1,8 @@
 
+from queue import PriorityQueue
 from copy import deepcopy
 from state import State
+import math
 
 
 class Search:
@@ -40,8 +42,7 @@ class Search:
 
 	@staticmethod
 	def manhattan(state, dot):
-		x, y = state.x, state.y
-		return abs(dot[0] - x) + abs(dot[1] - y)
+		return abs(dot[0] - state[0]) + abs(dot[1] - state[1])
 
 	def display(self, state):
 		"""
@@ -108,6 +109,8 @@ class Search:
 
 	def astar(self, frontier):
 		self.reset()
+		# create a set of heuristics until a food i s
+		heu = self.nearest_heuristic(self.start_state)
 		frontier.put((0, self.start_state))
 		self.visited.add(self.start_state)
 		# start search, unreachable if return None
@@ -118,6 +121,9 @@ class Search:
 				print("Expanded %r nodes" % self.node_number)
 				print("The path cost is %r" % state.cost)
 				return self.display(state)
+			if state.capture:
+				heu = self.nearest_heuristic(state)
+				frontier = PriorityQueue()
 			for di in Search.dirs:
 				x, y = state.x + di[0], state.y + di[1]
 				# not a wall
@@ -135,7 +141,7 @@ class Search:
 				expand = State(x, y, next_bits, capture)
 				expand.cost = state.cost + 1
 				# compute heuristic and add current cost
-				expand.heuristic = self.nearest_heuristic(expand) + expand.cost
+				expand.heuristic = heu[(expand.x, expand.y)] + expand.cost
 				expand.parent = state
 				if expand not in self.visited:
 					frontier.put((expand.heuristic, expand))
@@ -143,6 +149,7 @@ class Search:
 
 	def sum_heuristic(self, state):
 		"""
+		Non-Admissible
 		Heuristic of adding up all manhattan distance from current state to all
 		remaining dots not collected.
 		:param state: 
@@ -154,11 +161,12 @@ class Search:
 		heuristic = 0
 		for idx, dot in enumerate(dots):
 			if state.bits[idx] == 1:
-				heuristic += Search.manhattan(state, dot)
+				heuristic += Search.manhattan((state.x, state.y), dot)
 		return heuristic
 
 	def nearest_heuristic(self, state):
 		"""
+		Admissible
 		Heuristic of finding manhattan distance from current state to the
 		closest dot not collected.
 		:param state: 
@@ -166,9 +174,17 @@ class Search:
 		:return: 
 		:rtype: 
 		"""
+		x, y = state.x, state.y
+		heu = dict()
 		dots = self.maze.dots
-		heuristic = 9999999999
+		closest = (0, (0, 0))
+		heuristic = math.inf
 		for idx, dot in enumerate(dots):
-			if state.bits[idx] == 1 and heuristic >= Search.manhattan(state, dot):
-				heuristic = Search.manhattan(state, dot)
-		return heuristic
+			dist = Search.manhattan((x, y), dot)
+			if state.bits[idx] == 1 and heuristic >= dist:
+				heuristic = dist
+				closest = (idx, dot)
+		for x in range(self.maze.n):
+			for y in range(self.maze.m):
+				heu[(x, y)] = Search.manhattan((x, y), closest[1])
+		return heu
