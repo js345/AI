@@ -17,14 +17,39 @@ class board:
             state[7][i] = 2
         return state
 
+    def nextBoard(self, player, board):
+        cur_workers = self.get_workers(player, board)
+        opponent = 3 - cur_workers
+        res = []
+        addColumn = [-1, 0, 1]
+        tarX = 0
+        tarY = 0
+        for (x, y) in cur_workers:
+            if player == 1:
+                if x < board.size() - 1:
+                    tarX == x + 1
+            elif player == 2:
+                if x >= 1:
+                    tarX == x - 1
+            for c in addColumn:
+                tarY = y + addColumn[c]
+                if tarY >= 0 and tarY < board[0].size():
+                    cur = board.deepCopy()
+                    cur[x][y] = 0
+                    if (cur[tarX][tarY] == 0):
+                        cap = 0
+                    else:
+                        cap = 1
+                    cur[tarX][tarY] = player
+                    res.append((cur, cap))
 
-    '''find the result board'''
-    def nextBoard(self, player, idx, opponent, depth):
-        self.curPlayer = player[idx]
-        self.opponent = player[opponent]
-        cur_workers = self.get_workers(self.curPlayer.ID)
-        bestHeu = 0
-        res = None
+        return res
+
+    '''find the result board
+    def nextBoard(self, player, board):
+
+        cur_workers = self.get_workers(player,board)
+        opponent = 3- cur_workers
         cap_num = 0
         for (x, y) in cur_workers:
             boards = self.search(self.state, x, y, self.curPlayer.ID)
@@ -40,7 +65,7 @@ class board:
 
 
 
-    '''RETURN a list of next possibe move
+    RETURN a list of next possibe move
         also the should be the final result of the function
         just need to evaluate the heuristic additionally
 
@@ -48,7 +73,7 @@ class board:
         current worker coord x and y, id
         return : a list of (next board , opponent captured)
 
-    '''
+
     def search(self,board, x,y, ID):
         tarX = 0
         tarY = 0
@@ -84,15 +109,15 @@ class board:
                         res.append((cur, cap))
         return res
 
-'''
-    Given a list of board,
-    find the best one given the evaluation and stradegy and depth
-'''
+
+        Given a list of board,
+        find the best one given the evaluation and stradegy and depth
+
     def findBest(self, player, board, depth):
         if(depth == 0):
             return self.getHeuristic(player, board)
 
-
+    '''
 
 
 
@@ -111,19 +136,7 @@ class board:
     def Offensive_Heuristic_1(self,board):
         return 2 * self.get_workers(player.opponent,board) + np.random()
 
-    '''
-        def countWorkers(self,board):
-            i = 0   #self
-            j = 0   # opponent
-            for x in range(8):
-                for y in range(8):
-                    if board[x][y] == self.ID:
-                        i += 1
-                    if board[x][y] == 3 - self.ID:
-                        j += 1
-            return (i,j)
 
-    '''
 
     def get_workers(self,playerID,board):
         res = []
