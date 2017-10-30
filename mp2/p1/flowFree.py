@@ -83,15 +83,15 @@ class FlowFree:
 			return False
 		self.lca(cell)
 		for color in cell.colors:
-			cell.value = color
-			self.unassigned -= 1
-			if self.check_constraints():
+			if self.forward_check(cell, color):
 				self.assignments += 1
+				cell.value = color
+				self.unassigned -= 1
 				res = self.smart()
 				if res:
 					return res
 				self.unassigned += 1
-			cell.value = '_'
+				cell.value = '_'
 		return False
 
 	def lca(self, cell):
@@ -104,7 +104,8 @@ class FlowFree:
 		"""
 		neighbors = self.get_neighbor(cell)
 		counts = dict()
-		for color in self.colors:
+		colors = self.colors if len(cell.available) == 0 else cell.available
+		for color in colors:
 			counts[color] = 0
 		for neighbor in neighbors:
 			if neighbor == '_' or neighbor.value not in counts:
@@ -267,7 +268,7 @@ class FlowFree:
 
 if __name__ == "__main__":
 	dire = "input/"
-	filenames = ["input77.txt", "input88.txt", "input991.txt", "input10101.txt", "input10102.txt"]
+	filenames = ["input10101.txt", "input10102.txt"]
 	for filename in filenames:
 		print("Now working on file " + filename + "================")
 		ff = FlowFree(dire+filename)
@@ -278,5 +279,3 @@ if __name__ == "__main__":
 		print("Num of Assignments is " + str(ff.assignments))
 		print("Running Time is " + str(default_timer() - start) + "s")
 		outfile = "output/out" + filename[5:]
-		with open(outfile, 'w+') as f:
-			f.write()
