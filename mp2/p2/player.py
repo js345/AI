@@ -1,5 +1,5 @@
 import numpy as np
-from p2.board import Board
+from mp2.p2.board import Board
 
 
 class Player:
@@ -40,14 +40,13 @@ class Player:
 		queue = sorted(queue)
 		if len(queue) == 0:
 			print("q is empty")
-			empty = 0
 			if cur_player == self.ID:
 				res = np.inf
 			else:
 				res = -np.inf
 			for i in range(8):
 				print(board.state[i])
-			return (res, board)
+			return res, board
 		if cur_player == self.ID:
 			return queue[-1]
 		else:

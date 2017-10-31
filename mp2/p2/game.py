@@ -1,6 +1,6 @@
 import numpy as np
-from p2.player import Player
-from p2.board import Board
+from mp2.p2.player import Player
+from mp2.p2.board import Board
 from timeit import default_timer
 
 
@@ -22,8 +22,8 @@ class Game:
 			worker1.append((1, x))
 			worker2.append((6, x))
 			worker2.append((7, x))
-		playerlist.append(Player('m','offensive', 4, 1, worker1,False))
-		playerlist.append(Player('ab','offensive', 5, 2, worker2,False))
+		playerlist.append(Player('ab', 'offensive', 5, 1, worker1, True))
+		playerlist.append(Player('ab', 'defensive', 5, 2, worker2, False))
 		return playerlist
 
 	def checkDone(self, board):

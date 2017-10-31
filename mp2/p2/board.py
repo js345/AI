@@ -10,6 +10,12 @@ class Board:
 	# self.worker1 = 16
 	# self.worker2 = 16
 
+	def __str__(self):
+		s = ""
+		for row in self.state:
+			s += ",".join([str(c) for c in row]) + "\n"
+		return s
+
 	def init_state(self):
 		state = [[0 for x in range(8)] for y in range(8)]
 		for i in range(8):
@@ -67,13 +73,13 @@ class Board:
 		return 2 * len(self.get_workers(player.ID, board)) + random()
 
 	def defensive_heuristic_2(self, player, board):
-		return len(self.get_workers(player.ID, board)) + random()
+		return len(self.get_workers(player.ID, board)) + 2*(self.get_shortest_distance(player.opponent)) + random()
 
 	def offensive_heuristic_1(self, player, board):
 		return 2 * (30 - len(self.get_workers(player.opponent, board))) + random()
 
 	def offensive_heuristic_2(self, player, board):
-		return (30 - len(self.get_workers(player.opponent, board))) + random()
+		return 16 - len(self.get_workers(player.opponent, board)) + 2*(7 - self.get_shortest_distance(player.ID)) + random()
 
 	def get_workers(self, playerID, board):
 		res = []
@@ -92,4 +98,20 @@ class Board:
 					worker1 += 1
 				elif self.state[i][j] == 2:
 					worker2 += 1
-		return (16 - worker2, 16 - worker1)
+		return 16 - worker2, 16 - worker1
+
+	def get_shortest_distance(self, player_id):
+		"""
+		Get shortest distance of this player's piece to goal
+		:param player_id: 
+		:type player_id: 
+		:return: 
+		:rtype: 
+		"""
+		target = 0 if player_id == 2 else 7
+		dist = 7
+		for i, row in enumerate(self.state):
+			for piece in row:
+				if piece == player_id:
+					dist = min(dist, abs(target - i))
+		return dist
