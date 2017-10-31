@@ -22,8 +22,8 @@ class Game:
 			worker1.append((1, x))
 			worker2.append((6, x))
 			worker2.append((7, x))
-		playerlist.append(Player('ab', 'offensive', 5, 1, worker1, True))
-		playerlist.append(Player('ab', 'defensive', 5, 2, worker2, False))
+		playerlist.append(Player('ab', 'offensive', 3, 1, worker1, True))
+		playerlist.append(Player('ab', 'defensive', 3, 2, worker2, False))
 		return playerlist
 
 	def checkDone(self, board):

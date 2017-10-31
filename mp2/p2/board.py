@@ -79,7 +79,7 @@ class Board:
 		return 2 * (30 - len(self.get_workers(player.opponent, board))) + random()
 
 	def offensive_heuristic_2(self, player, board):
-		return 16 - len(self.get_workers(player.opponent, board)) + 2*(7 - self.get_shortest_distance(player.ID)) + random()
+		return 32 - 2*len(self.get_workers(player.opponent, board)) + 2*(7 - self.get_shortest_distance(player.ID)) + random()
 
 	def get_workers(self, playerID, board):
 		res = []
