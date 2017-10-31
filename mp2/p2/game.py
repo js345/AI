@@ -1,6 +1,6 @@
 import numpy as np
-from mp2.p2.player import Player
-from mp2.p2.board import Board
+from p2.player import Player
+from p2.board import Board
 from timeit import default_timer
 
 
@@ -12,6 +12,10 @@ class Game:
 		self.done = False
 		self.winner = None
 		self.turn = 1
+		self.alpha_beta = 'ab'
+		self.mini_max = 'm'
+		self.offensive = 'offensive'
+		self.defensive = 'defensive'
 
 	def init_players(self):
 		playerlist = []
@@ -22,8 +26,9 @@ class Game:
 			worker1.append((1, x))
 			worker2.append((6, x))
 			worker2.append((7, x))
-		playerlist.append(Player('ab', 'offensive', 3, 1, worker1, True))
-		playerlist.append(Player('ab', 'defensive', 3, 2, worker2, False))
+		playerlist.append(Player('m' , 'offensive', 4, 1, worker1, False))
+		playerlist.append(Player('ab', 'offensive', 5, 2, worker2, False))
+
 		return playerlist
 
 	def checkDone(self, board):
@@ -67,14 +72,21 @@ class Game:
 			self.curplayerIdx = 1 - self.curplayerIdx
 			self.turn += 1
 		self.print_board()
-		print("total time used = " + str(default_timer() - total))
-		print("player1 expends " + str(self.player[0].expendedNodes))
-		print("player2 expends " + str(self.player[1].expendedNodes))
+		print("A:")
 		print("winner  is: player" + str(self.winner))
+		print("B:")
+		print("player1 expands " + str(self.player[0].expendedNodes))
+		print("player2 expands " + str(self.player[1].expendedNodes))
+		print("C:")
+		print("total move: " + str(self.turn))
+		print("Average nodes expanded per move" + str(float(self.player[0].expendedNodes + self.player[1].expendedNodes)/float(self.turn)) )
+		print("total time used = " + str(default_timer() - total) + "s")
+		print("Average time used per move: " + str(float(default_timer() - total)/float(self.turn))+ " s")
 		player1_cap, player2_cap = self.board.check_capture()
+		print("D:")
+		print("total move: " + str(self.turn))
 		print("player1 captured: " + str(player1_cap))
 		print("player2 captured: " + str(player2_cap))
-		print("total turn" + str(self.turn))
 
 	def print_board(self):
 		state = self.board.state

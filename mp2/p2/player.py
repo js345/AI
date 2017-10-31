@@ -1,5 +1,5 @@
 import numpy as np
-from mp2.p2.board import Board
+from p2.board import Board
 
 
 class Player:
@@ -24,9 +24,9 @@ class Player:
 			return self.alpha_beta(board, cur_player, cur_depth)
 
 	def mini_max(self, board, cur_player, cur_depth):
-		self.expendedNodes += 1
 		if cur_depth == self.depth:
 			return board.get_heuristic(self, board), board
+		self.expendedNodes += 1
 		queue = []
 		next_level = board.nextBoard(cur_player, board)
 		# explore the value of each possible step
@@ -39,13 +39,13 @@ class Player:
 				queue.append((self.take_move(it, 3 - cur_player, 1 + cur_depth)[0], board))
 		queue = sorted(queue)
 		if len(queue) == 0:
-			print("q is empty")
+			#print("q is empty")
 			if cur_player == self.ID:
 				res = np.inf
 			else:
 				res = -np.inf
-			for i in range(8):
-				print(board.state[i])
+			#for i in range(8):
+			#	print(board.state[i])
 			return res, board
 		if cur_player == self.ID:
 			return queue[-1]
@@ -59,9 +59,9 @@ class Player:
 			return self.min_val(board, cur_player, cur_depth, -np.inf, np.inf)
 
 	def max_val(self, board, cur_player, cur_depth, alpha, beta):
-		self.expendedNodes += 1
 		if cur_depth == self.depth:
 			return board.get_heuristic(self, board), board
+		self.expendedNodes += 1
 
 		max_val = -np.inf
 		res = None
@@ -81,9 +81,9 @@ class Player:
 		return res
 
 	def min_val(self, board, cur_player, cur_depth, alpha, beta):
-		self.expendedNodes += 1
 		if cur_depth == self.depth:
 			return board.get_heuristic(self, board), board
+		self.expendedNodes += 1
 
 		min_val = np.inf
 		res = None
