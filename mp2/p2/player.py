@@ -1,5 +1,5 @@
 import numpy as np
-from p2.board import Board
+from mp2.p2.board import Board
 
 
 class Player:

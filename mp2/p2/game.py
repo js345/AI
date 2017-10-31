@@ -1,6 +1,6 @@
 import numpy as np
-from p2.player import Player
-from p2.board import Board
+from mp2.p2.player import Player
+from mp2.p2.board import Board
 from timeit import default_timer
 
 

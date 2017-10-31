@@ -1,6 +1,7 @@
 import numpy as np
 from random import random
 import copy
+import math
 
 
 class Board:
@@ -70,16 +71,24 @@ class Board:
 				return self.defensive_heuristic_1(player, board)
 
 	def defensive_heuristic_1(self, player, board):
-		return 2 * len(self.get_workers(player.ID, board)) + random()
+		dist1, dist2, count1, count2 = self.get_heu_info(player.ID)
+		return 2 * count1 + random()
 
 	def defensive_heuristic_2(self, player, board):
-		return len(self.get_workers(player.ID, board)) + 2*(self.get_shortest_distance(player.opponent)) + random()
+		dist1, dist2, count1, count2 = self.get_heu_info(player.ID)
+		return len(self.get_workers(player.ID, board)) + 2*dist2 + random()
 
 	def offensive_heuristic_1(self, player, board):
-		return 2 * (30 - len(self.get_workers(player.opponent, board))) + random()
+		dist1, dist2, count1, count2 = self.get_heu_info(player.ID)
+		return 2 * (30 - count2) + random()
 
 	def offensive_heuristic_2(self, player, board):
-		return 32 - 2*len(self.get_workers(player.opponent, board)) + 2*(7 - self.get_shortest_distance(player.ID)) + random()
+		dist1, dist2, count1, count2 = self.get_heu_info(player.ID)
+		if dist1 == 0 or count2 == 0:
+			return 9999
+		if dist2 == 0 or count1 == 0:
+			return -9999
+		return 32 - 2*count2 + 2*(7 - dist1) + random()
 
 	def get_workers(self, playerID, board):
 		res = []
@@ -100,7 +109,7 @@ class Board:
 					worker2 += 1
 		return 16 - worker2, 16 - worker1
 
-	def get_shortest_distance(self, player_id):
+	def get_heu_info(self, player_id):
 		"""
 		Get shortest distance of this player's piece to goal
 		:param player_id: 
@@ -108,10 +117,18 @@ class Board:
 		:return: 
 		:rtype: 
 		"""
-		target = 0 if player_id == 2 else 7
-		dist = 7
+		if player_id == 1:
+			target = (7, 0)
+		else:
+			target = (0, 7)
+		dist1, dist2 = 7, 7
+		count1, count2 = 0, 0
 		for i, row in enumerate(self.state):
 			for piece in row:
 				if piece == player_id:
-					dist = min(dist, abs(target - i))
-		return dist
+					count1 += 1
+					dist1 = min(dist1, abs(target[0] - i))
+				elif piece == 3 - player_id:
+					count2 += 1
+					dist2 = min(dist2, abs(target[1] - i))
+		return dist1, dist2, count1, count2
