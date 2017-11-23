@@ -66,7 +66,7 @@ class NB:
 					elif x[k] == 1:
 						maps[i][j] += pfs[j][k]
 			predY[i] = np.argmax(maps[i])
-		return predY
+		return predY, maps
 
 	def acc(self, predY, testY):
 		"""
@@ -84,4 +84,5 @@ class NB:
 			total[int(testY[i])] += 1
 			if predY[i] == testY[i]:
 				correct[int(predY[i])] += 1
+		print("=========Showing class accuracies===========")
 		print(np.divide(correct, total))
