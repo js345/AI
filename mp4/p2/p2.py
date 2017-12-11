@@ -1,6 +1,5 @@
 
-from random import uniform, choice
-import math
+import math, random
 
 
 class State:
@@ -44,12 +43,12 @@ class State:
 		if self.ball_y > self.paddle_y + State.paddle_height or self.ball_y < self.paddle_y:
 			return -1
 		self.ball_x = 2 - self.ball_x
-		self.velocity_x = uniform(-0.015, 0.015) - self.velocity_x
+		self.velocity_x = random.uniform(-0.015, 0.015) - self.velocity_x
 		if abs(self.velocity_x) < 0.03:
 			self.velocity_x = 0.03 if self.velocity_x > 0 else -0.03
-		self.velocity_y = uniform(-0.03, 0.03) - self.velocity_y
-		self.velocity_x = max(min(self.velocity_x, 1), -1)
-		self.velocity_y = max(min(self.velocity_y, 1), -1)
+		self.velocity_y = random.uniform(-0.03, 0.03) - self.velocity_y
+		self.velocity_x = max(min(self.velocity_x, 1.0), -1.0)
+		self.velocity_y = max(min(self.velocity_y, 1.0), -1.0)
 		return 1
 
 	def update_paddle(self, move):
@@ -74,20 +73,19 @@ class State:
 		:rtype: 
 		"""
 		# update number of actions done so far to this state
-		actions[state] = actions.get(state, 0) + 1
+		actions[state] = actions.get(state, 0.0) + 1.0
 		# compute learning rate
 		alpha = c / (c + actions[state])
-		rewards[state] = rewards.get(state, 0) + alpha*(reward+gamma*max_reward-rewards.get(state, 0))
+		rewards[state] = rewards.get(state, 0.0) + alpha*(reward+gamma*max_reward-rewards.get(state, 0.0))
 
 	@staticmethod
 	def find_max_reward(state):
-		return max([rewards.get(state + str(m), 0) for m in range(3)])
+		return max([rewards.get(state + str(m), 0.0) for m in range(3)])
 
 	@staticmethod
 	def find_best_move(state, greedy=False):
-		nums = [rewards.get(state+str(m), 0) if greedy else
-				State.explore(rewards.get(state+str(m), 0), actions.get(state+str(m), 0)) for m in range(3)]
-		return choice([idx for idx, r in enumerate(nums) if r == max(nums)])
+		nums = [rewards.get(state+str(m), 0.0) if greedy else State.explore(rewards.get(state+str(m), 0.0), actions.get(state+str(m), 0.0)) for m in range(3)]
+		return random.choice([idx for idx, r in enumerate(nums) if r == max(nums)])
 
 	@staticmethod
 	def explore(reward, count, e=65):
@@ -107,18 +105,19 @@ if __name__ == "__main__":
 		while True:
 			if prev_r < 0:
 				State.update_reward(prev_s, prev_r, -1)
+				score += 1
 				break
 			curr_s = s.__str__()
 			curr_r = s.update_ball()
 			if prev_s is not None:
-				State.update_reward(prev_s, State.find_max_reward(curr_s), prev_r)
+				State.update_reward(prev_s, prev_r, State.find_max_reward(curr_s))
 			action = State.find_best_move(curr_s)
 			prev_s = curr_s + str(action)
 			s.update_paddle(moves[action])
 			prev_r = curr_r
 			score += curr_r
 		if it % 1000 == 999:
-			print(str((score+1000)/1000) + " at round " + str(it+1))
+			print(str(score/1000) + " at round " + str(it+1))
 			score = 0
 	print(len(actions))
 	print(sum(1 for action in actions if actions[action] < 65))
