@@ -84,7 +84,7 @@ class State:
 	def explore(reward, count, e=90):
 		if count >= e:
 			return reward
-		return 1001
+		return 99999
 
 
 if __name__ == "__main__":
