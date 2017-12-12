@@ -17,6 +17,8 @@ class State:
 
 	def __str__(self):
 		vx = '+' if self.velocity_x > 0 else '-'
+		vx += '+' if self.velocity_x > 0.3 else ''
+		vx += '-' if self.velocity_x < -0.3 else ''
 		vy = '+' if self.velocity_y > 0 else '-'
 		if abs(self.velocity_y) < 0.015:
 			vy = '0'
