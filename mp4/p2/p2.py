@@ -56,7 +56,7 @@ class State:
 		self.paddle_y = min(max(0.0, self.paddle_y), 1-State.paddle_height)
 
 	@staticmethod
-	def update_reward(state, reward, max_reward, c=65, gamma=0.88):
+	def update_reward(state, reward, max_reward, alpha=1, c=65, gamma=0.88):
 		"""
 		Update state rewards and action counts of states
 		:param state: state in string representation
@@ -75,7 +75,7 @@ class State:
 		# update number of actions done so far to this state
 		actions[state] = actions.get(state, 0.0) + 1.0
 		# compute learning rate
-		alpha = c / (c + actions[state])
+		alpha *= c / (c + actions[state])
 		rewards[state] = rewards.get(state, 0.0) + alpha*(reward+gamma*max_reward-rewards.get(state, 0.0))
 
 	@staticmethod
@@ -88,29 +88,30 @@ class State:
 		return random.choice([idx for idx, r in enumerate(nums) if r == max(nums)])
 
 	@staticmethod
-	def explore(reward, count, e=65):
+	def explore(reward, count, e=70):
 		if count >= e:
 			return reward
-		return 1000
+		return 1001
 
 
 if __name__ == "__main__":
 	moves = [-0.04, 0, 0.04]
 	rewards, actions = dict(), dict()
 	score = 0
+	alpha = 1
 	for it in range(100000):
 		s = State(0.5, 0.5, 0.03, 0.01, 0.5 - State.paddle_height/2)
 		prev_s, prev_r = None, 0
 		# training
 		while True:
 			if prev_r < 0:
-				State.update_reward(prev_s, prev_r, -1)
+				State.update_reward(prev_s, prev_r, -1, alpha=alpha)
 				score += 1
 				break
 			curr_s = s.__str__()
 			curr_r = s.update_ball()
 			if prev_s is not None:
-				State.update_reward(prev_s, prev_r, State.find_max_reward(curr_s))
+				State.update_reward(prev_s, prev_r, State.find_max_reward(curr_s), alpha=alpha)
 			action = State.find_best_move(curr_s)
 			prev_s = curr_s + str(action)
 			s.update_paddle(moves[action])
